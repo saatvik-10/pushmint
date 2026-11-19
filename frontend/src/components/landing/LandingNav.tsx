@@ -139,6 +139,7 @@ export default function LandingNav() {
         >
           <Link
             to="/deployments"
+            className="pushmint-nav-deployments"
             style={{
               color: "var(--text-secondary)",
               fontFamily: "var(--font-mono)",

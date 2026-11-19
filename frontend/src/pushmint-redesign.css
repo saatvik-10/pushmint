@@ -214,3 +214,24 @@ body.landing-main-active,
   font-size: 13px !important;
   box-shadow: 8px 8px 0 rgba(21, 88, 201, .16) !important;
 }
+
+
+.pushmint-nav-deployments {
+  display: inline-flex;
+  border-radius: 6px;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 0 13px !important;
+  border: 1px solid rgba(146, 155, 170, 0.35);
+  background: rgba(255, 255, 255, 0.025);
+  color: var(--pm-copy) !important;
+  font-family: var(--font-body) !important;
+  font-size: 12px !important;
+  transition: border-color 160ms ease, background 160ms ease, color 160ms ease;
+}
+.pushmint-nav-deployments:hover {
+  border-color: var(--pm-blue);
+  background: rgba(21, 88, 201, 0.12);
+  color: var(--pm-lime) !important;
+}
