@@ -126,6 +126,32 @@ async function ensureBun(sandbox: SandboxClient, onLog: Log) {
   );
 }
 
+async function ensureCompatibleNode(sandbox: SandboxClient, onLog: Log) {
+  await runCommand(
+    sandbox,
+    `set -eu
+if ! node -e 'const [major, minor] = process.versions.node.split(".").map(Number); process.exit((major === 20 && minor >= 19) || (major >= 22 && (major > 22 || minor >= 12)) ? 0 : 1)'; then
+  NODE_VERSION="$(curl -fsSL https://nodejs.org/dist/index.tab | awk '$1 ~ /^v22\\.[0-9]+\\.[0-9]+$/ { print $1; exit }')"
+  test -n "$NODE_VERSION"
+  case "$(uname -m)" in
+    x86_64) NODE_ARCH=x64 ;;
+    aarch64|arm64) NODE_ARCH=arm64 ;;
+    *) echo "Unsupported architecture for the Node.js runtime." >&2; exit 1 ;;
+  esac
+  mkdir -p "$HOME/.pushmint-node"
+  curl -fsSL "https://nodejs.org/dist/$NODE_VERSION/node-$NODE_VERSION-linux-$NODE_ARCH.tar.xz" | tar -xJ -C "$HOME/.pushmint-node" --strip-components=1
+fi
+export PATH="$HOME/.pushmint-node/bin:$PATH"
+node --version`,
+    "setup",
+    onLog,
+  );
+}
+
+function withBuildRuntimes(command: string) {
+  return `export PATH="$HOME/.pushmint-node/bin:$HOME/.bun/bin:$PATH" && ${command}`;
+}
+
 export async function runSandboxBuild(
   deployment: Deployment,
   onLog: Log,
@@ -151,6 +177,7 @@ export async function runSandboxBuild(
       metadata: { deploymentId: deployment.id },
     });
     await ensureBun(sandbox, onLog);
+    await ensureCompatibleNode(sandbox, onLog);
 
     await onLog("✦ Cloning repository inside the sandbox...");
     await runCommand(
@@ -190,7 +217,7 @@ export async function runSandboxBuild(
     await onLog("✦ Installing dependencies with Bun in the sandbox...");
     await runCommand(
       sandbox,
-      `cd ${shellQuote(SOURCE_DIR)} && export PATH="$HOME/.bun/bin:$PATH" && bun install${hasLockfile ? " --frozen-lockfile" : ""}`,
+      `cd ${shellQuote(SOURCE_DIR)} && ${withBuildRuntimes(`bun install${hasLockfile ? " --frozen-lockfile" : ""}`)}`,
       "install",
       onLog,
     );
@@ -200,7 +227,7 @@ export async function runSandboxBuild(
     );
     await runCommand(
       sandbox,
-      `cd ${shellQuote(SOURCE_DIR)} && export PATH="$HOME/.bun/bin:$PATH" && bun run ${shellQuote(deployment.buildScript)}`,
+      `cd ${shellQuote(SOURCE_DIR)} && ${withBuildRuntimes(`bun run ${shellQuote(deployment.buildScript)}`)}`,
       "build",
       onLog,
     );
