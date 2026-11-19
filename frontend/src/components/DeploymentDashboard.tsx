@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { ExternalLink, LoaderCircle, RefreshCw, Terminal } from "lucide-react";
-import { Link, Navigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import LandingNav from "./landing/LandingNav";
 import {
   formatDeploymentDate,
-  getDisplayName,
   getDeployment,
   listDeployments,
   type Deployment,
@@ -19,7 +18,6 @@ const statusColors: Record<Deployment["status"], string> = {
 };
 
 export default function DeploymentDashboard() {
-  const [displayName] = useState(() => getDisplayName());
   const [deployments, setDeployments] = useState<Deployment[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [selectedLogs, setSelectedLogs] = useState<string[]>([]);
@@ -29,7 +27,7 @@ export default function DeploymentDashboard() {
   const refresh = useCallback(async () => {
     try {
       setError("");
-      setDeployments(await listDeployments(displayName));
+      setDeployments(await listDeployments());
     } catch {
       setError(
         "Could not load deployments. Check that the Pushmint API is running.",
@@ -37,7 +35,7 @@ export default function DeploymentDashboard() {
     } finally {
       setLoading(false);
     }
-  }, [displayName]);
+  }, []);
 
   useEffect(() => {
     void refresh();
@@ -59,8 +57,6 @@ export default function DeploymentDashboard() {
       setSelectedLogs(["Unable to load build logs."]);
     }
   };
-
-  if (!displayName) return <Navigate to="/login" replace state={{ from: "/deployments" }} />;
 
   return (
     <main
@@ -96,7 +92,7 @@ export default function DeploymentDashboard() {
                 fontSize: 12,
               }}
             >
-              // Deployment history
+              // Public deployment feed
             </p>
             <h1
               style={{
@@ -106,10 +102,10 @@ export default function DeploymentDashboard() {
                 fontWeight: 500,
               }}
             >
-              {displayName}’s deployments
+              Recent deployments
             </h1>
             <p style={{ color: "var(--text-muted)", margin: 0 }}>
-              Build status, preview links, and recent output.
+              Browse build status, preview links, and recent output from public deployments.
             </p>
           </div>
           <div style={{ display: "flex", gap: 10 }}>
@@ -182,7 +178,7 @@ export default function DeploymentDashboard() {
                       >
                         ● {deployment.status}
                       </span>
-                      <span style={tagStyle}>by {deployment.displayName ?? displayName}</span>
+                      <span style={tagStyle}>by {deployment.displayName ?? "Anonymous"}</span>
                       <span style={tagStyle}>
                         {deployment.framework === "next_static"
                           ? "Next.js static"

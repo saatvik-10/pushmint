@@ -162,7 +162,7 @@ describe("deployment API", () => {
       siteUrl: "http://deploy-test-1.localhost:3000",
     });
 
-    const listResponse = await fetch(`${baseUrl}/deployments?displayName=Avery%20Dev`);
+    const listResponse = await fetch(`${baseUrl}/deployments`);
     const list = (await listResponse.json()) as { deployments: Row[] };
     expect(list.deployments[0]).toMatchObject({
       id: created.id,
@@ -232,7 +232,7 @@ describe("deployment API", () => {
   });
 
 
-  test("filters deployment history by display name and validates the name", async () => {
+  test("lists public deployment history across all display names", async () => {
     const submit = (displayName: string) =>
       fetch(`${baseUrl}/deploy`, {
         method: "POST",
@@ -245,11 +245,14 @@ describe("deployment API", () => {
       });
     expect((await submit("Avery Dev")).status).toBe(202);
     expect((await submit("Morgan Dev")).status).toBe(202);
-    const avery = (await fetch(`${baseUrl}/deployments?displayName=avery%20dev`).then((r) => r.json())) as { deployments: Row[] };
-    expect(avery.deployments).toHaveLength(1);
-    expect(avery.deployments[0].displayName).toBe("Avery Dev");
-    const missingName = await fetch(`${baseUrl}/deployments`);
-    expect(missingName.status).toBe(400);
+    const response = await fetch(`${baseUrl}/deployments`);
+    expect(response.status).toBe(200);
+    const { deployments } = (await response.json()) as { deployments: Row[] };
+    expect(deployments).toHaveLength(2);
+    expect(deployments.map((deployment) => deployment.displayName).sort()).toEqual([
+      "Avery Dev",
+      "Morgan Dev",
+    ]);
     expect((await submit("x")).status).toBe(400);
   });
 
@@ -280,7 +283,7 @@ describe("deployment API", () => {
       error: "Anti-bot verification failed. Please try again.",
     });
     expect(
-      await fetch(`${baseUrl}/deployments?displayName=Avery%20Dev`).then((result) => result.json()),
+      await fetch(`${baseUrl}/deployments`).then((result) => result.json()),
     ).toMatchObject({ deployments: [] });
     await new Promise<void>((resolve, reject) =>
       serverWithFailure.close((error) => (error ? reject(error) : resolve())),

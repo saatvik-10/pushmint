@@ -2,7 +2,8 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import { deploymentApi, getDisplayName, saveDisplayName, type StaticFramework } from "../lib/deployments";
+import { deploymentApi, type StaticFramework } from "../lib/deployments";
+import { useDisplayName } from "../context/DisplayNameContext";
 import { TurnstileWidget } from "./TurnstileWidget";
 import "./landing/landingmain.css";
 import LandingNav from "./landing/LandingNav";
@@ -15,7 +16,7 @@ import {
 } from "./landing/LandingHelpers";
 
 export function Landing() {
-  const [displayName, setDisplayName] = useState(() => getDisplayName());
+  const { displayName, updateDisplayName } = useDisplayName();
   const [repoUrl, setRepoUrl] = useState("");
   const [framework, setFramework] = useState<StaticFramework>("vite");
   const [buildScript, setBuildScript] = useState("build");
@@ -265,8 +266,7 @@ export function Landing() {
                         type="text"
                         value={displayName}
                         onChange={(event) => {
-                          setDisplayName(event.target.value);
-                          saveDisplayName(event.target.value);
+                          updateDisplayName(event.target.value);
                         }}
                         disabled={uploading || (uploadId !== "" && status !== "failed")}
                         minLength={2}
@@ -276,7 +276,7 @@ export function Landing() {
                         style={{ ...fieldStyle, width: "100%" }}
                       />
                       <span style={{ color: "var(--text-muted)", fontSize: 11 }}>
-                        Used to group your deployments and apply your name-based build limit. This is a public display name, not a verified account.
+                        Shown beside deployments in the public feed and used for name-based rate limits. This is not a verified account.
                       </span>
                     </div>
                     <div

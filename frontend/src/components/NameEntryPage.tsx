@@ -2,11 +2,13 @@ import { useState, type FormEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import LandingNav from "./landing/LandingNav";
-import { getDisplayName, saveDisplayName } from "../lib/deployments";
+import { getDisplayName } from "../lib/deployments";
+import { useDisplayName } from "../context/DisplayNameContext";
 
 export default function NameEntryPage() {
   const [displayName, setDisplayName] = useState(() => getDisplayName());
   const [error, setError] = useState("");
+  const { updateDisplayName } = useDisplayName();
   const navigate = useNavigate();
   const location = useLocation();
   const destination = (location.state as { from?: string } | null)?.from ?? "/deploy";
@@ -18,7 +20,7 @@ export default function NameEntryPage() {
       setError("Use 2–32 letters, numbers, spaces, periods, apostrophes, underscores, or hyphens.");
       return;
     }
-    saveDisplayName(value);
+    updateDisplayName(value);
     toast.success(`Welcome, ${value}.`);
     navigate(destination, { replace: true });
   };
@@ -29,7 +31,7 @@ export default function NameEntryPage() {
       <section className="pushmint-name-card">
         <p className="pushmint-name-eyebrow">PUBLIC DEPLOYMENT PROFILE</p>
         <h1>What should we call you?</h1>
-        <p>Choose a display name to label your deployments and find them in the dashboard. No password or account is created.</p>
+        <p>Choose a public display name to show beside your deployments in the shared feed. No password or account is created.</p>
         <form onSubmit={submit}>
           <label htmlFor="pushmint-name">Display name</label>
           <input id="pushmint-name" value={displayName} onChange={(event) => { setDisplayName(event.target.value); setError(""); }} minLength={2} maxLength={32} autoComplete="nickname" autoFocus />

@@ -254,14 +254,9 @@ export function createApp(
     }
   });
 
-  app.get("/deployments", async (req, res) => {
-    const identity = normalizeDisplayName(req.query.displayName);
-    if (!identity) {
-      return res.status(400).json({ error: "Provide a valid display name." });
-    }
+  app.get("/deployments", async (_req, res) => {
     try {
       const deployments = await database.deployment.findMany({
-        where: { displayNameKey: identity.displayNameKey },
         orderBy: { createdAt: "desc" },
         take: 100,
         select: {

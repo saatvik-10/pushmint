@@ -28,7 +28,7 @@ The API, worker loop, and static request handler are separate modules that run i
 
 - **Vite / compatible static apps:** defaults to `bun run build` and `dist/`.
 - **Next.js static export:** defaults to `bun run build` and `out/`. The repository must configure `output: "export"` in `next.config.*` and use features supported by static export.
-- The deploy form lets you choose a display name, package script, and output directory. The dashboard filters deployments by display name; this is attribution, not authentication.
+- The deploy form lets you choose a public display name, package script, and output directory. The dashboard shows the latest public deployments from all submitters; names are attribution, not authentication.
 
 Bun installs dependencies from `bun.lock` or `bun.lockb` when present, and uses frozen-lockfile mode. Without a Bun lockfile, it resolves dependencies from `package.json` with `bun install`. The worker verifies that output stays inside the checked-out project and contains `index.html`, then enforces file-count and size limits while retrieving files from E2B. Unknown extensionless paths fall back to that index file for client-side routing.
 

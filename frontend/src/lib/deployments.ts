@@ -26,22 +26,21 @@ export const deploymentApi = axios.create({
   timeout: 15_000,
 });
 
-const DISPLAY_NAME_KEY = "pushmint.displayName";
+export const DISPLAY_NAME_STORAGE_KEY = "pushmint.displayName";
 
 export function getDisplayName() {
-  return window.localStorage.getItem(DISPLAY_NAME_KEY)?.trim() ?? "";
+  return window.localStorage.getItem(DISPLAY_NAME_STORAGE_KEY)?.trim() ?? "";
 }
 
 export function saveDisplayName(displayName: string) {
   const normalized = displayName.normalize("NFKC").trim().replace(/\s+/g, " ");
-  window.localStorage.setItem(DISPLAY_NAME_KEY, normalized);
+  window.localStorage.setItem(DISPLAY_NAME_STORAGE_KEY, normalized);
   return normalized;
 }
 
-export async function listDeployments(displayName: string) {
+export async function listDeployments() {
   const response = await deploymentApi.get<{ deployments: Deployment[] }>(
     "/deployments",
-    { params: { displayName } },
   );
   return response.data.deployments;
 }

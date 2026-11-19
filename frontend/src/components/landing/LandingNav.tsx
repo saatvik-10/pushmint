@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { useDisplayName } from "../../context/DisplayNameContext";
 
 export default function LandingNav() {
   const [scrolled, setScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const { displayName } = useDisplayName();
+  const location = useLocation();
+  const profileDestination = location.pathname === "/" ? "/deploy" : location.pathname;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 30);
@@ -150,8 +154,11 @@ export default function LandingNav() {
           >
             Deployments
           </Link>
-          <a
-            href="/login"
+          <Link
+            to="/login"
+            state={{ from: profileDestination }}
+            aria-label={displayName ? `Change display name (${displayName})` : "Set display name"}
+            title={displayName ? `Change display name: ${displayName}` : "Set display name"}
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -175,7 +182,9 @@ export default function LandingNav() {
               e.currentTarget.style.color = "var(--text-secondary)";
             }}
           >
-            Sign in
+            <span style={{ maxWidth: 120, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {displayName || "Set name"}
+            </span>
             <svg
               viewBox="0 0 16 16"
               fill="none"
@@ -189,7 +198,7 @@ export default function LandingNav() {
                 strokeLinejoin="round"
               />
             </svg>
-          </a>
+          </Link>
           <Link
             to="/deploy"
             style={{
@@ -337,9 +346,12 @@ export default function LandingNav() {
                 marginTop: 8,
               }}
             >
-              <a
-                href="/login"
+              <Link
+                to="/login"
+                state={{ from: profileDestination }}
                 onClick={() => setIsOpen(false)}
+                aria-label={displayName ? `Change display name (${displayName})` : "Set display name"}
+                title={displayName ? `Change display name: ${displayName}` : "Set display name"}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -357,7 +369,7 @@ export default function LandingNav() {
                   fontFamily: "var(--font-body)",
                 }}
               >
-                Sign in
+                {displayName || "Set display name"}
                 <svg
                   viewBox="0 0 16 16"
                   fill="none"
@@ -371,7 +383,7 @@ export default function LandingNav() {
                     strokeLinejoin="round"
                   />
                 </svg>
-              </a>
+              </Link>
               <Link
                 to="/deploy"
                 onClick={() => setIsOpen(false)}
