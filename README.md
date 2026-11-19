@@ -36,14 +36,14 @@ Bun installs dependencies from `bun.lock` or `bun.lockb` when present, and uses 
 
 - **Frontend:** deploy `frontend/` as a static site on Vercel or Cloudflare Pages, using Bun commands.
 - **Backend:** deploy the repository's `Dockerfile` as one Render web service. The image uses Bun and runs the API, build loop, and static request handler together. No separate worker, cron, or Redis service is needed.
-- **Database:** Neon Postgres, accessed through Prisma. The service applies the checked-in migration at startup.
+- **Database:** Postgres, accessed through Prisma 7 and its `pg` driver adapter. The runtime uses Supabase's transaction pooler URL in `DATABASE_URL`; Prisma Migrate uses the session pooler URL in `DIRECT_URL`. The service applies checked-in migrations at startup.
 - **Static artifacts:** Cloudflare R2.
 
 Render's free web services can sleep when idle and have limited CPU and memory. Builds may wait for the service to wake. This setup is for a hobby/resume demo, not production hosting. Keep spending limits enabled and monitor provider usage.
 
 ## Local setup
 
-Requirements: Bun 1.4.2 or compatible, and a reachable Postgres database (Neon works). Create a Cloudflare Turnstile widget and put its site key in `frontend/.env` as `VITE_TURNSTILE_SITE_KEY`. Put the matching secret in `uploadService/.env` as `TURNSTILE_SECRET_KEY`. Also set `E2B_API_KEY` and a random `RATE_LIMIT_SECRET` of at least 32 characters in `uploadService/.env`. E2B and Turnstile secrets stay on the backend and are never sent to the browser or build sandbox.
+Requirements: Bun 1.4.2 or compatible, and a reachable Postgres database (Neon works). Create a Cloudflare Turnstile widget and put its site key in `frontend/.env` as `VITE_TURNSTILE_SITE_KEY`. Put the matching secret in `uploadService/.env` as `TURNSTILE_SECRET_KEY`. For Supabase, set `DATABASE_URL` to the transaction pooler connection string (port 6543, with `pgbouncer=true`) and `DIRECT_URL` to the session pooler connection string (port 5432). Also set `E2B_API_KEY` and a random `RATE_LIMIT_SECRET` of at least 32 characters in `uploadService/.env`. E2B and Turnstile secrets stay on the backend and are never sent to the browser or build sandbox.
 
 Copy the backend template and set your Postgres, R2, and allowed repository values:
 

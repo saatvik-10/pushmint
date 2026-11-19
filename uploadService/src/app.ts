@@ -1,6 +1,6 @@
 import cors from "cors";
 import express from "express";
-import type { Prisma, PrismaClient } from "@prisma/client";
+import type { Prisma, PrismaClient } from "./generated/prisma/client";
 import {
   consumeDeploymentQuota,
   DeploymentRateLimitError,

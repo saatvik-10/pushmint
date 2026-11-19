@@ -1,9 +1,9 @@
 import "dotenv/config";
 import express from "express";
-import { PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "./generated/prisma/client";
+import { prisma } from "./lib/prisma";
 import { createApp } from "./app";
 
-const prisma = new PrismaClient();
 const port = Number(process.env.PORT ?? 3000);
 const { createSiteHandler } = require("../../../reqHandler/dist/index.js") as {
   createSiteHandler: () => express.RequestHandler;

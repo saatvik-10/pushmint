@@ -1,5 +1,5 @@
 import { createHmac } from "node:crypto";
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "./generated/prisma/client";
 
 type RateLimitDatabase = Pick<Prisma.TransactionClient, "deploymentRateLimit">;
 

@@ -1,5 +1,6 @@
 .env
 **/node_modules
 **/dist
+uploadService/src/generated/prisma
 **/output
 **/*.tsbuildinfo
