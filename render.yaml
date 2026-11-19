@@ -1,0 +1,45 @@
+services:
+  - type: web
+    name: pushmint-platform
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: ACCESS
+        sync: false
+      - key: SECRET
+        sync: false
+      - key: ENDPOINT
+        sync: false
+      - key: BUCKET
+        sync: false
+      - key: E2B_API_KEY
+        sync: false
+      - key: TURNSTILE_SECRET_KEY
+        sync: false
+      - key: TURNSTILE_EXPECTED_HOSTNAME
+        value: ""
+      - key: RATE_LIMIT_SECRET
+        sync: false
+      - key: FRONTEND_ORIGIN
+        sync: false
+      - key: SITE_DOMAIN
+        sync: false
+      - key: PUBLIC_SITE_PROTOCOL
+        value: https
+      - key: BUILD_TIMEOUT_MS
+        value: "300000"
+      - key: DEPLOYMENTS_ENABLED
+        value: "true"
+      - key: DEPLOY_LIMIT_PER_HOUR
+        value: "3"
+      - key: DEPLOY_LIMIT_PER_DAY
+        value: "10"
+      - key: MAX_QUEUED_DEPLOYMENTS
+        value: "20"
+      - key: TRUST_PROXY_HOPS
+        value: "1"
