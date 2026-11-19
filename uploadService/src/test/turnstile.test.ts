@@ -1,3 +1,5 @@
+/// <reference types="bun" />
+
 import { describe, expect, test } from "bun:test";
 import { verifyTurnstileToken } from "../turnstile";
 
@@ -25,7 +27,7 @@ describe("Turnstile Siteverify", () => {
 
   test("rejects failed, wrong-action, and wrong-hostname tokens", async () => {
     const response = (value: unknown) =>
-      (async () => Response.json(value)) as typeof fetch;
+      (async () => Response.json(value)) as unknown as typeof fetch;
 
     expect(
       await verifyTurnstileToken("bad", "", {
@@ -58,7 +60,7 @@ describe("Turnstile Siteverify", () => {
     );
     const failingFetch = (async () => {
       throw new Error("network failure");
-    }) as typeof fetch;
+    }) as unknown as typeof fetch;
     expect(
       await verifyTurnstileToken("token", "", {
         secretKey: "secret",
