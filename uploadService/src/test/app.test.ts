@@ -147,6 +147,7 @@ describe("deployment API", () => {
         framework: "next_static",
         buildScript: "build",
         outputDirectory: "out",
+        projectDirectory: "apps/site",
         turnstileToken: "valid-test-token",
       }),
     });
@@ -170,6 +171,7 @@ describe("deployment API", () => {
       framework: "next_static",
       buildScript: "build",
       outputDirectory: "out",
+      projectDirectory: "apps/site",
       status: "queued",
       siteUrl: created.siteUrl,
     });
@@ -217,6 +219,18 @@ describe("deployment API", () => {
       }),
     });
     expect(invalidOutput.status).toBe(400);
+
+    const invalidProjectDirectory = await fetch(`${baseUrl}/deploy`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        displayName: "Avery Dev",
+        repoUrl: "https://github.com/acme/site",
+        projectDirectory: "../../secrets",
+        turnstileToken: "valid-test-token",
+      }),
+    });
+    expect(invalidProjectDirectory.status).toBe(400);
 
     const invalidScript = await fetch(`${baseUrl}/deploy`, {
       method: "POST",

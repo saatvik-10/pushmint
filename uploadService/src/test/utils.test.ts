@@ -1,7 +1,10 @@
+//
+
 import { describe, expect, test } from "bun:test";
 import {
   getBuildScript,
   getOutputDirectory,
+  getProjectDirectory,
   getSiteUrl,
   getStaticFramework,
   isDeploymentHost,
@@ -40,6 +43,17 @@ describe("deployment input validation", () => {
     expect(getStaticFramework("next_server")).toBeNull();
     expect(getBuildScript("build")).toBe("build");
     expect(getBuildScript("build && curl example.com")).toBeNull();
+  });
+
+  test("accepts project directories anywhere inside the repository", () => {
+    expect(getProjectDirectory()).toBe(".");
+    expect(getProjectDirectory(".")).toBe(".");
+    expect(getProjectDirectory("client")).toBe("client");
+    expect(getProjectDirectory("apps/customer-site/")).toBe("apps/customer-site");
+    expect(getProjectDirectory("../outside")).toBeNull();
+    expect(getProjectDirectory("apps/../outside")).toBeNull();
+    expect(getProjectDirectory("/tmp/site")).toBeNull();
+    expect(getProjectDirectory("apps\\site")).toBe("apps/site");
   });
 
   test("builds predictable static subdomain URLs and rejects reserved hosts", () => {
