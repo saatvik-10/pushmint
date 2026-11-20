@@ -60,6 +60,26 @@ export function getOutputDirectory(framework: string, requested?: unknown) {
   return value;
 }
 
+export function getProjectDirectory(requested?: unknown) {
+  if (requested === undefined) return ".";
+  if (typeof requested !== "string") return null;
+  const value = requested
+    .trim()
+    .replace(/\\/g, "/")
+    .replace(/^\.\//, "")
+    .replace(/\/+$/, "");
+  if (!value || value === ".") return ".";
+  if (
+    value.length > 180 ||
+    !/^[a-zA-Z0-9._/-]+$/.test(value) ||
+    value
+      .split("/")
+      .some((segment) => !segment || segment === "." || segment === "..")
+  )
+    return null;
+  return value;
+}
+
 export function getStaticFramework(value: unknown) {
   if (value === undefined || value === "vite") return "vite" as const;
   if (value === "next_static") return "next_static" as const;

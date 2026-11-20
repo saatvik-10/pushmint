@@ -11,6 +11,7 @@ import { verifyTurnstileToken } from "./turnstile";
 import {
   getBuildScript,
   getOutputDirectory,
+  getProjectDirectory,
   getSiteUrl,
   getStaticFramework,
   isDeploymentHost,
@@ -98,14 +99,21 @@ export function createApp(
       framework,
       body.outputDirectory ?? defaultOutputDirectory,
     );
+    const projectDirectory = getProjectDirectory(body.projectDirectory);
     const buildScript = getBuildScript(body.buildScript ?? "build");
+
+    if (!projectDirectory) {
+      return res.status(400).json({
+        error: "Project directory must be a relative path inside the repository.",
+      });
+    }
 
     if (!outputDirectory) {
       return res
         .status(400)
         .json({
           error:
-            "Output directory must be a relative path inside the repository.",
+            "Output directory must be a relative path inside the project directory.",
         });
     }
     if (!buildScript) {
@@ -190,6 +198,7 @@ export function createApp(
               framework,
               buildScript,
               outputDirectory,
+              projectDirectory,
             },
           });
           const siteUrl = getSiteUrl(deployment.id);
@@ -266,6 +275,7 @@ export function createApp(
           framework: true,
           buildScript: true,
           outputDirectory: true,
+          projectDirectory: true,
           status: true,
           siteUrl: true,
           errorMessage: true,

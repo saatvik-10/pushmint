@@ -6,6 +6,7 @@ type DeploymentJob = {
   repoUrl: string;
   buildScript: string;
   outputDirectory: string;
+  projectDirectory: string;
 };
 
 type Database = {
