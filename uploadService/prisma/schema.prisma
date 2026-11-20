@@ -27,6 +27,7 @@ model Deployment {
   framework       StaticFramework  @default(vite)
   buildScript     String           @default("build")
   outputDirectory String           @default("dist")
+  projectDirectory String          @default(".")
   status          DeploymentStatus @default(queued)
   siteUrl         String?
   errorMessage    String?
