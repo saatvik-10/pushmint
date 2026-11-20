@@ -12,12 +12,12 @@ export function Terminal() {
     },
     { text: "  ✦ Validating public GitHub repo...", color: "var(--primary)" },
     { text: "  ✦ Adding job to deployment queue...", color: "var(--primary)" },
-    { text: "  ✦ Queuing build job [id: a7f3c9]", color: "#D4FF24" },
+    { text: "  ✦ Queuing build job [id: cmwpcr4nh00012v731jc89zlf]", color: "#D4FF24" },
     { text: "  ✦ Starting isolated E2B sandbox", color: "#D4FF24" },
     { text: "  ✦ Running bun install... done", color: "#1558C9" },
     { text: "  ✦ Running bun run build... done", color: "#1558C9" },
     { text: "  ✦ Uploading static output to R2... done", color: "#1558C9" },
-    { text: "  ↗ https://a7f3c9.itsaatvik.dev", color: "var(--green)" },
+    { text: "  ↗ https://cmwpcr4nh00012v731jc89zlf.pushmint.itsaatvik.dev", color: "var(--green)" },
   ];
 
   const [visibleLines, setVisibleLines] = useState<typeof lines>([]);
