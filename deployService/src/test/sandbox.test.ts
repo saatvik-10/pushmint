@@ -7,6 +7,7 @@ function createMockSandbox(
     missingScript?: boolean;
     failedBuild?: boolean;
     symlink?: boolean;
+    rootLockfile?: boolean;
   } = {},
 ) {
   const commands: string[] = [];
@@ -32,6 +33,16 @@ function createMockSandbox(
         throw new Error(`File not found: ${filePath}`);
       },
       list: async (directory: string) => {
+        if (directory === "/home/user/source" && options.rootLockfile) {
+          return [
+            {
+              name: "bun.lock",
+              path: `${directory}/bun.lock`,
+              type: "file",
+              size: 1n,
+            },
+          ];
+        }
         if (directory.endsWith("/dist")) {
           return [
             {
@@ -57,6 +68,7 @@ const deployment = {
   repoUrl: "https://github.com/example/site",
   buildScript: "build",
   outputDirectory: "dist",
+  projectDirectory: ".",
 };
 
 describe("runSandboxBuild", () => {
@@ -110,6 +122,32 @@ describe("runSandboxBuild", () => {
 
     expect(uploaded).toBe(false);
     expect(mock.wasKilled()).toBe(true);
+  });
+
+  test("installs and builds from a nested project directory", async () => {
+    const mock = createMockSandbox({ rootLockfile: true });
+    await runSandboxBuild(
+      { ...deployment, projectDirectory: "apps/customer-site" },
+      () => undefined,
+      {
+        createSandbox: async () => mock.sandbox,
+        upload: async () => undefined,
+      },
+    );
+    expect(
+      mock.commands.some(
+        (command) =>
+          command.includes("cd '/home/user/source' &&") &&
+          command.includes("bun install --frozen-lockfile"),
+      ),
+    ).toBe(true);
+    expect(
+      mock.commands.some(
+        (command) =>
+          command.includes("cd '/home/user/source/apps/customer-site' &&") &&
+          command.includes("bun run 'build'"),
+      ),
+    ).toBe(true);
   });
 
   test("rejects symbolic links in build output and cleans up the sandbox", async () => {

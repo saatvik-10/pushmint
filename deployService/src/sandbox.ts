@@ -11,6 +11,7 @@ type Deployment = {
   repoUrl: string;
   buildScript: string;
   outputDirectory: string;
+  projectDirectory: string;
 };
 type Log = (message: string) => void | Promise<void>;
 type SandboxClient = Pick<Sandbox, "commands" | "files" | "kill">;
@@ -187,37 +188,58 @@ export async function runSandboxBuild(
       onLog,
     );
 
+    const projectDir = path.posix.resolve(
+      SOURCE_DIR,
+      deployment.projectDirectory,
+    );
+    if (projectDir !== SOURCE_DIR && !projectDir.startsWith(`${SOURCE_DIR}/`)) {
+      throw new Error(
+        "Project directory must be inside the cloned repository.",
+      );
+    }
+
     const packageJson = JSON.parse(
-      await sandbox.files.read(`${SOURCE_DIR}/package.json`),
+      await sandbox.files.read(`${projectDir}/package.json`),
     ) as {
       scripts?: Record<string, string>;
     };
     if (!packageJson.scripts?.[deployment.buildScript]) {
       throw new Error(
-        `package.json has no '${deployment.buildScript}' script.`,
+        `package.json has no '${deployment.buildScript}' script in ${deployment.projectDirectory === "." ? "the repository root" : `project directory '${deployment.projectDirectory}'`}.`,
       );
     }
 
     const outputDir = path.posix.resolve(
-      SOURCE_DIR,
+      projectDir,
       deployment.outputDirectory,
     );
-    if (outputDir === SOURCE_DIR || !outputDir.startsWith(`${SOURCE_DIR}/`)) {
+    if (outputDir === projectDir || !outputDir.startsWith(`${projectDir}/`)) {
       throw new Error(
         "Output directory must be a child directory of the project.",
       );
     }
 
     const sourceEntries = await sandbox.files.list(SOURCE_DIR);
-    const hasLockfile = sourceEntries.some(
+    const projectEntries =
+      projectDir === SOURCE_DIR
+        ? sourceEntries
+        : await sandbox.files.list(projectDir);
+    const hasRootLockfile = sourceEntries.some(
       (entry) =>
         entry.type === "file" &&
         (entry.name === "bun.lock" || entry.name === "bun.lockb"),
     );
+    const hasProjectLockfile = projectEntries.some(
+      (entry) =>
+        entry.type === "file" &&
+        (entry.name === "bun.lock" || entry.name === "bun.lockb"),
+    );
+    const installDir = hasRootLockfile ? SOURCE_DIR : projectDir;
+    const hasLockfile = hasRootLockfile || hasProjectLockfile;
     await onLog("✦ Installing dependencies with Bun in the sandbox...");
     await runCommand(
       sandbox,
-      `cd ${shellQuote(SOURCE_DIR)} && ${withBuildRuntimes(`bun install${hasLockfile ? " --frozen-lockfile" : ""}`)}`,
+      `cd ${shellQuote(installDir)} && ${withBuildRuntimes(`bun install${hasLockfile ? " --frozen-lockfile" : ""}`)}`,
       "install",
       onLog,
     );
@@ -227,7 +249,7 @@ export async function runSandboxBuild(
     );
     await runCommand(
       sandbox,
-      `cd ${shellQuote(SOURCE_DIR)} && ${withBuildRuntimes(`bun run ${shellQuote(deployment.buildScript)}`)}`,
+      `cd ${shellQuote(projectDir)} && ${withBuildRuntimes(`bun run ${shellQuote(deployment.buildScript)}`)}`,
       "build",
       onLog,
     );
