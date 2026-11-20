@@ -220,14 +220,14 @@ export default function LandingHero() {
           <Link to="/deploy" className="pushmint-button pushmint-button-primary">
             Deploy a repository <span aria-hidden="true">↗</span>
           </Link>
-          <a
+          {/* <a
             href="https://github.com/saatvik-10/pushmint"
             target="_blank"
             rel="noopener noreferrer"
             className="pushmint-button pushmint-button-quiet"
           >
             Explore the project
-          </a>
+          </a> */}
         </motion.div>
         <div className="pushmint-hero-facts" aria-label="Build platform details">
           <span><b>01</b> Isolated builds</span>

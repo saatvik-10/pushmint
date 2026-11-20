@@ -108,7 +108,7 @@ export default function LandingNav() {
             color: "var(--text-muted)",
           }}
         >
-          {["Features", "Architecture", "Comparison", "FAQ", "GitHub"].map(
+          {["Features", "Architecture", "Comparison", "FAQ"].map(
             (item) => (
               <a
                 key={item}
@@ -317,7 +317,7 @@ export default function LandingNav() {
             }}
           >
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {["Features", "Architecture", "Comparison", "FAQ", "GitHub"].map(
+              {["Features", "Architecture", "Comparison", "FAQ"].map(
                 (item) => (
                   <a
                     key={item}

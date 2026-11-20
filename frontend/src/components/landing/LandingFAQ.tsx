@@ -16,8 +16,8 @@ const faqs = [
     a: "Generated static artifacts are uploaded to Cloudflare R2. The backend request handler reads and serves the requested HTML, CSS, JavaScript, and asset files.",
   },
   {
-    q: "Is Pushmint open source?",
-    a: "Pushmint is a learning project built to understand distributed systems, cloud infrastructure, and deployment pipelines. The codebase is on GitHub as a portfolio project.",
+    q: "Does Pushmint use a sandbox?",
+    a: "Yes. Each deployment build runs in an isolated sandbox, keeping build processes separate while generating static files for hosting.",
   },
 ];
 

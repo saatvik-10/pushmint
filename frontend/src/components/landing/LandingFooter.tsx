@@ -41,15 +41,15 @@ export default function LandingFooter() {
       </div>
       <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
         {[
-          {
-            label: "GitHub",
-            href: "https://github.com/saatvik-10/pushmint",
-          },
-          {
-            label: "Docs",
-            href: "https://github.com/saatvik-10/pushmint#readme",
-          },
-          { label: "Architecture", href: "#architecture" },
+          // {
+          //   label: "GitHub",
+          //   href: "https://github.com/saatvik-10/pushmint",
+          // },
+          // {
+          //   label: "Docs",
+          //   href: "https://github.com/saatvik-10/pushmint#readme",
+          // },
+          // { label: "Architecture", href: "#architecture" },
           { label: "Contact", href: "https://itsaatvik.dev" },
         ].map((item) => (
           <a
