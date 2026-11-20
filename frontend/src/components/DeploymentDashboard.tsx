@@ -206,7 +206,7 @@ export default function DeploymentDashboard() {
                       }}
                     >
                       {formatDeploymentDate(deployment.createdAt)} · bun run{" "}
-                      {deployment.buildScript} · {deployment.outputDirectory}/
+                      {deployment.buildScript} · project {deployment.projectDirectory} · output {deployment.outputDirectory}/
                     </p>
                     {deployment.errorMessage && (
                       <p

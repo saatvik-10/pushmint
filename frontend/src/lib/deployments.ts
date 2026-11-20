@@ -10,6 +10,7 @@ export interface Deployment {
   framework: StaticFramework;
   buildScript: string;
   outputDirectory: string;
+  projectDirectory: string;
   status: DeploymentStatus;
   siteUrl: string | null;
   errorMessage: string | null;

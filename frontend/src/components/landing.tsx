@@ -21,6 +21,7 @@ export function Landing() {
   const [framework, setFramework] = useState<StaticFramework>("vite");
   const [buildScript, setBuildScript] = useState("build");
   const [outputDirectory, setOutputDirectory] = useState("dist");
+  const [projectDirectory, setProjectDirectory] = useState(".");
   const [uploadId, setUploadId] = useState("");
   const [siteUrl, setSiteUrl] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -86,6 +87,7 @@ export function Landing() {
         framework,
         buildScript,
         outputDirectory,
+        projectDirectory,
         turnstileToken,
       });
       toast.success("Deployment queued. Build is starting.", { id: requestToastId });
@@ -342,6 +344,37 @@ export function Landing() {
                         gap: 12,
                       }}
                     >
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 8,
+                        }}
+                      >
+                        <label
+                          htmlFor="project-directory"
+                          style={{
+                            fontFamily: "var(--font-mono)",
+                            fontSize: 10,
+                            letterSpacing: "0.1em",
+                            textTransform: "uppercase",
+                            color: "var(--text-secondary)",
+                          }}
+                        >
+                          Project directory
+                        </label>
+                        <input
+                          id="project-directory"
+                          value={projectDirectory}
+                          onChange={(event) => setProjectDirectory(event.target.value)}
+                          disabled={uploading}
+                          placeholder=". or apps/web"
+                          style={fieldStyle}
+                        />
+                        <span style={{ color: "var(--text-muted)", fontSize: 12 }}>
+                          Folder containing package.json. Use . for the repository root.
+                        </span>
+                      </div>
                       <div
                         style={{
                           display: "flex",
